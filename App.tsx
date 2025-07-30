@@ -1,10 +1,28 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Button, StyleSheet, Text, View, Alert, Platform } from 'react-native';
+import { requestBluetoothPermission } from './ble/BlePermissionManager';
+import { handleScan } from './ble/HandleScanBLE';
 
 export default function App() {
+  useEffect(() => {
+    const checkPermissions = async () => {
+      const granted = await requestBluetoothPermission();
+      if (!granted) {
+        Alert.alert(
+          'Permisos requeridos',
+          'Esta app necesita permisos de Bluetooth para funcionar correctamente.'
+        );
+      }
+    };
+
+    checkPermissions();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+      <Text style={styles.title}>Dispositivos BLE</Text>
+      <Button title="Escanear Dispositivos" onPress={handleScan} />
       <StatusBar style="auto" />
     </View>
   );
@@ -16,5 +34,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 20,
+    marginBottom: 20,
   },
 });
